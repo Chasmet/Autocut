@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+  />
+  <title>CutFlow</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="dark">
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-overlay"></div>
+
+  <main class="app-shell">
+    <header class="topbar glass">
+      <div class="brand-wrap">
+        <div class="brand-badge">CF</div>
+        <div>
+          <h1>CutFlow</h1>
+          <p>Découpe audio et vidéo par tranches fixes</p>
+        </div>
+      </div>
+
+      <button id="themeToggle" class="theme-toggle" type="button" aria-label="Changer de thème">
+        <span id="themeIcon">🌙</span>
+        <span id="themeText">Sombre</span>
+      </button>
+    </header>
+
+    <section class="hero glass">
+      <div class="hero-text">
+        <span class="tag">Application maison</span>
+        <h2>Découpe rapide, claire, agréable sur mobile</h2>
+        <p>
+          Choisis un fichier, sélectionne une tranche, puis télécharge chaque segment
+          un par un avec des noms simples : Cut 1, Cut 2, Cut 3...
+        </p>
+      </div>
+    </section>
+
+    <section class="panel glass">
+      <div class="section-head">
+        <h3>1. Importer un média</h3>
+        <p>Audio ou vidéo</p>
+      </div>
+
+      <label for="mediaFile" class="upload-box" id="uploadBox">
+        <input id="mediaFile" type="file" accept="audio/*,video/*" />
+        <div class="upload-icon">📁</div>
+        <div class="upload-main">Touchez pour choisir un fichier</div>
+        <div class="upload-sub">Formats usuels audio et vidéo</div>
+      </label>
+
+      <div class="file-info" id="fileInfo">
+        <div class="file-pill">Aucun fichier sélectionné</div>
+      </div>
+
+      <div class="preview-wrap" id="previewWrap"></div>
+    </section>
+
+    <section class="panel glass">
+      <div class="section-head">
+        <h3>2. Choisir la tranche</h3>
+        <p>5, 10, 20 ou 30 secondes</p>
+      </div>
+
+      <div class="segment-grid" id="segmentGrid">
+        <button class="segment-btn active" type="button" data-seconds="5">5s</button>
+        <button class="segment-btn" type="button" data-seconds="10">10s</button>
+        <button class="segment-btn" type="button" data-seconds="20">20s</button>
+        <button class="segment-btn" type="button" data-seconds="30">30s</button>
+      </div>
+
+      <div class="summary-row">
+        <div class="summary-box">
+          <span class="summary-label">Tranche choisie</span>
+          <strong id="selectedSegmentLabel">5 secondes</strong>
+        </div>
+
+        <div class="summary-box">
+          <span class="summary-label">Durée détectée</span>
+          <strong id="durationLabel">-</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel glass">
+      <div class="section-head">
+        <h3>3. Lancer la découpe</h3>
+        <p>Le traitement se fait dans le navigateur</p>
+      </div>
+
+      <button id="cutButton" class="primary-btn" type="button" disabled>
+        Découper maintenant
+      </button>
+
+      <div class="status-wrap">
+        <div class="status-line">
+          <span id="statusText">En attente d’un fichier</span>
+          <span id="progressText">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel glass">
+      <div class="section-head">
+        <h3>4. Résultats</h3>
+        <p>Chaque cut est téléchargeable séparément</p>
+      </div>
+
+      <div class="results-list" id="resultsList">
+        <div class="empty-state">
+          Les segments apparaîtront ici après la découpe.
+        </div>
+      </div>
+    </section>
+
+    <section class="note-box glass">
+      <h4>Important</h4>
+      <p>
+        Pour que l’application marche bien sur téléphone, utilise de préférence
+        <strong>GitHub Pages</strong>. Ouvrir directement le fichier HTML dans le téléphone
+        peut bloquer certains chargements du moteur vidéo/audio.
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
