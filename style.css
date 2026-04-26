@@ -7,6 +7,7 @@
   --muted: #c7d2e1;
   --accent: #63a9ff;
   --accent-2: #7a7cff;
+  --button-main: #18b3d2;
   --success: #7be0b2;
   --danger: #ff7f99;
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
@@ -23,8 +24,6 @@ body[data-theme="light"] {
   --card-border: rgba(32, 53, 84, 0.12);
   --text: #112031;
   --muted: #4d6077;
-  --accent: #2d7dff;
-  --accent-2: #5a67ff;
   --success: #14a46f;
   --danger: #d84c68;
   --shadow: 0 12px 32px rgba(32, 53, 84, 0.15);
@@ -47,8 +46,8 @@ body {
   color: var(--text);
   font-family: Inter, system-ui, Arial, sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(98, 169, 255, 0.15), transparent 35%),
-    radial-gradient(circle at top right, rgba(122, 124, 255, 0.18), transparent 30%),
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 24%, transparent), transparent 35%),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--accent-2) 26%, transparent), transparent 30%),
     linear-gradient(180deg, var(--bg), var(--bg-2));
   overflow-x: hidden;
   transition: color 0.25s ease, background 0.25s ease;
@@ -74,7 +73,7 @@ body {
 .bg-overlay {
   background:
     linear-gradient(180deg, var(--overlay), rgba(0, 0, 0, 0.18)),
-    radial-gradient(circle at 50% 20%, rgba(99, 169, 255, 0.14), transparent 35%);
+    radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 35%);
   backdrop-filter: blur(2px);
 }
 
@@ -135,7 +134,7 @@ body {
   font-size: 1rem;
   color: white;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 8px 20px rgba(99, 169, 255, 0.28);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 34%, transparent);
 }
 
 .topbar h1 {
@@ -178,7 +177,7 @@ body {
   display: inline-block;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(99, 169, 255, 0.14);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
   color: var(--text);
   font-size: 0.84rem;
   font-weight: 700;
@@ -221,7 +220,7 @@ body {
   display: block;
   width: 100%;
   border-radius: 22px;
-  border: 1.5px dashed rgba(99, 169, 255, 0.5);
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 60%, transparent);
   background: var(--upload-bg);
   padding: 22px 16px;
   text-align: center;
@@ -291,7 +290,7 @@ body {
 }
 
 .segment-btn {
-  border: 1px solid rgba(99, 169, 255, 0.28);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
   background: rgba(255, 255, 255, 0.07);
   color: var(--text);
   border-radius: 18px;
@@ -303,10 +302,91 @@ body {
 }
 
 .segment-btn.active {
-  background: linear-gradient(135deg, rgba(99, 169, 255, 0.22), rgba(122, 124, 255, 0.2));
-  border-color: rgba(99, 169, 255, 0.72);
-  box-shadow: 0 10px 24px rgba(99, 169, 255, 0.18);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 28%, transparent), color-mix(in srgb, var(--accent-2) 26%, transparent));
+  border-color: color-mix(in srgb, var(--accent) 78%, white 10%);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 24%, transparent);
   transform: translateY(-1px);
+}
+
+.custom-time-box {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 10px;
+}
+
+.custom-time-box label,
+.color-field span {
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.custom-time-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.custom-time-row input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.custom-time-box p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.small-btn,
+.secondary-btn {
+  border: 0;
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  cursor: pointer;
+}
+
+.secondary-btn {
+  width: 100%;
+  margin-top: 12px;
+  background: linear-gradient(135deg, #4b5563, #111827);
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.color-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.color-field input {
+  width: 62px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
 }
 
 .summary-row {
@@ -338,7 +418,7 @@ body {
   font-weight: 900;
   color: white;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 12px 24px rgba(99, 169, 255, 0.26);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--accent) 32%, transparent);
   cursor: pointer;
   transition: transform 0.18s ease, opacity 0.18s ease;
 }
@@ -435,7 +515,7 @@ body {
 .badge {
   padding: 8px 10px;
   border-radius: 999px;
-  background: rgba(99, 169, 255, 0.12);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
   font-size: 0.84rem;
   font-weight: 700;
 }
@@ -448,7 +528,7 @@ body {
   font-size: 0.95rem;
   cursor: pointer;
   color: white;
-  background: linear-gradient(135deg, #1ea97c, #18b3d2);
+  background: linear-gradient(135deg, #1ea97c, var(--button-main));
   transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
@@ -479,7 +559,8 @@ body {
     padding: 20px 20px 40px;
   }
 
-  .summary-row {
+  .summary-row,
+  .color-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
