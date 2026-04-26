@@ -439,6 +439,13 @@ function getSessionMeta() {
   }
 }
 
+function createFileFromBlob(blob, fileName, mimeType) {
+  return new File([blob], fileName, {
+    type: mimeType || blob.type || "application/octet-stream",
+    lastModified: Date.now(),
+  });
+}
+
 function directDownload(blobUrl, fileName) {
   const a = document.createElement("a");
   a.href = blobUrl;
@@ -448,6 +455,32 @@ function directDownload(blobUrl, fileName) {
   document.body.appendChild(a);
   a.click();
   a.remove();
+}
+
+async function shareOrSaveCut(blob, fileName, mimeType, blobUrl) {
+  const file = createFileFromBlob(blob, fileName, mimeType);
+
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+      await navigator.share({
+        files: [file],
+        title: fileName,
+        text: "CutFlow - fichier découpé",
+      });
+      setStatus(`${fileName} prêt à enregistrer ou partager`, 100);
+      return;
+    }
+  } catch (error) {
+    console.warn("Partage Android indisponible ou annulé :", error);
+  }
+
+  try {
+    directDownload(blobUrl, fileName);
+    setStatus(`Téléchargement de ${fileName} lancé`, 100);
+  } catch (error) {
+    console.error(error);
+    setStatus("Téléchargement bloqué. Appuie sur Ouvrir puis menu ⋮ pour enregistrer.", 0);
+  }
 }
 
 function openCut(blobUrl) {
@@ -495,28 +528,33 @@ function createResultCard({ index, start, end, blob, fileName, extension, mimeTy
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
       <button class="download-btn open-btn" type="button">Ouvrir</button>
-      <button class="download-btn save-btn" type="button">Télécharger</button>
+      <button class="download-btn share-btn" type="button">Partager / enregistrer</button>
     </div>
+
+    <button class="download-btn save-btn" type="button" style="background:linear-gradient(135deg,#3f7dff,#7a7cff);">
+      Télécharger classique
+    </button>
   `;
 
   const openBtn = wrapper.querySelector(".open-btn");
+  const shareBtn = wrapper.querySelector(".share-btn");
   const saveBtn = wrapper.querySelector(".save-btn");
 
   openBtn.addEventListener("click", () => {
     openCut(blobUrl);
   });
 
+  shareBtn.addEventListener("click", async () => {
+    await shareOrSaveCut(blob, fileName, mimeType, blobUrl);
+  });
+
   saveBtn.addEventListener("click", () => {
     try {
       directDownload(blobUrl, fileName);
-      setStatus(`Téléchargement de ${fileName} lancé...`, 100);
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 1200);
+      setStatus(`Téléchargement classique de ${fileName} lancé`, 100);
     } catch (error) {
       console.error(error);
-      setStatus("Erreur pendant le téléchargement", 0);
+      setStatus("Téléchargement bloqué. Essaie Partager / enregistrer.", 0);
     }
   });
 
