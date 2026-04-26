@@ -13,6 +13,13 @@ const dom = {
   fileInfo: document.getElementById("fileInfo"),
   previewWrap: document.getElementById("previewWrap"),
   segmentGrid: document.getElementById("segmentGrid"),
+  customSecondsInput: document.getElementById("customSecondsInput"),
+  applyCustomSegmentBtn: document.getElementById("applyCustomSegmentBtn"),
+  accentColorInput: document.getElementById("accentColorInput"),
+  accent2ColorInput: document.getElementById("accent2ColorInput"),
+  buttonColorInput: document.getElementById("buttonColorInput"),
+  bgColorInput: document.getElementById("bgColorInput"),
+  resetDesignBtn: document.getElementById("resetDesignBtn"),
   selectedSegmentLabel: document.getElementById("selectedSegmentLabel"),
   durationLabel: document.getElementById("durationLabel"),
   cutButton: document.getElementById("cutButton"),
@@ -32,6 +39,15 @@ let currentSessionCuts = [];
 const DB_NAME = "cutflow-db";
 const STORE_NAME = "saved-cuts";
 const META_KEY = "cutflow-last-session";
+const CUSTOM_SEGMENT_KEY = "cutflow-custom-segment";
+const DESIGN_KEY = "cutflow-custom-design";
+
+const DEFAULT_DESIGN = {
+  accent: "#63a9ff",
+  accent2: "#7a7cff",
+  button: "#18b3d2",
+  bg: "#07111f",
+};
 
 function setStatus(text, percent = null) {
   dom.statusText.textContent = text;
@@ -133,21 +149,126 @@ function setupTheme() {
   dom.themeToggle.addEventListener("click", toggleTheme);
 }
 
+function saveDesign(design) {
+  localStorage.setItem(DESIGN_KEY, JSON.stringify(design));
+}
+
+function getSavedDesign() {
+  try {
+    return JSON.parse(localStorage.getItem(DESIGN_KEY) || "null") || DEFAULT_DESIGN;
+  } catch {
+    return DEFAULT_DESIGN;
+  }
+}
+
+function darkerHex(hex, percent = 22) {
+  const clean = hex.replace("#", "");
+  const num = parseInt(clean, 16);
+  const r = Math.max(0, ((num >> 16) & 255) - percent);
+  const g = Math.max(0, ((num >> 8) & 255) - percent);
+  const b = Math.max(0, (num & 255) - percent);
+  return `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function applyDesign(design) {
+  document.documentElement.style.setProperty("--accent", design.accent);
+  document.documentElement.style.setProperty("--accent-2", design.accent2);
+  document.documentElement.style.setProperty("--button-main", design.button);
+  document.documentElement.style.setProperty("--bg", design.bg);
+  document.documentElement.style.setProperty("--bg-2", darkerHex(design.bg, 10));
+
+  if (dom.accentColorInput) dom.accentColorInput.value = design.accent;
+  if (dom.accent2ColorInput) dom.accent2ColorInput.value = design.accent2;
+  if (dom.buttonColorInput) dom.buttonColorInput.value = design.button;
+  if (dom.bgColorInput) dom.bgColorInput.value = design.bg;
+}
+
+function currentDesignFromInputs() {
+  return {
+    accent: dom.accentColorInput?.value || DEFAULT_DESIGN.accent,
+    accent2: dom.accent2ColorInput?.value || DEFAULT_DESIGN.accent2,
+    button: dom.buttonColorInput?.value || DEFAULT_DESIGN.button,
+    bg: dom.bgColorInput?.value || DEFAULT_DESIGN.bg,
+  };
+}
+
+function setupDesignControls() {
+  applyDesign(getSavedDesign());
+
+  const inputs = [dom.accentColorInput, dom.accent2ColorInput, dom.buttonColorInput, dom.bgColorInput].filter(Boolean);
+
+  inputs.forEach((input) => {
+    input.addEventListener("input", () => {
+      const design = currentDesignFromInputs();
+      applyDesign(design);
+      saveDesign(design);
+      setStatus("Couleurs personnalisées enregistrées", null);
+    });
+  });
+
+  dom.resetDesignBtn?.addEventListener("click", () => {
+    localStorage.removeItem(DESIGN_KEY);
+    applyDesign(DEFAULT_DESIGN);
+    setStatus("Couleurs réinitialisées", null);
+  });
+}
+
+function applySegmentSeconds(seconds, source = "custom") {
+  const safeSeconds = Math.max(1, Math.min(300, Math.round(Number(seconds) || 5)));
+  selectedSegmentSeconds = safeSeconds;
+
+  const buttons = dom.segmentGrid.querySelectorAll(".segment-btn");
+  buttons.forEach((btn) => {
+    btn.classList.toggle("active", Number(btn.dataset.seconds) === safeSeconds);
+  });
+
+  if (dom.customSecondsInput && source === "custom") {
+    dom.customSecondsInput.value = String(safeSeconds);
+  }
+
+  localStorage.setItem(CUSTOM_SEGMENT_KEY, String(safeSeconds));
+  updateSelectedSegmentLabel();
+  clearResults();
+  renderSavedActionsIfNeeded();
+}
+
 function setupSegmentButtons() {
   const buttons = dom.segmentGrid.querySelectorAll(".segment-btn");
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
-      buttons.forEach((btn) => btn.classList.remove("active"));
-      button.classList.add("active");
-      selectedSegmentSeconds = Number(button.dataset.seconds);
-      updateSelectedSegmentLabel();
-      clearResults();
-      renderSavedActionsIfNeeded();
+      applySegmentSeconds(Number(button.dataset.seconds), "button");
+      setStatus(`Tranche réglée sur ${button.dataset.seconds} secondes`, null);
     });
   });
 
-  updateSelectedSegmentLabel();
+  const savedSegment = Number(localStorage.getItem(CUSTOM_SEGMENT_KEY) || 5);
+  applySegmentSeconds(savedSegment, savedSegment > 0 ? "custom" : "button");
+
+  dom.applyCustomSegmentBtn?.addEventListener("click", () => {
+    const value = Number(dom.customSecondsInput.value);
+
+    if (!value || value < 1) {
+      setStatus("Mets un temps valide : minimum 1 seconde", 0);
+      return;
+    }
+
+    if (value > 300) {
+      setStatus("Maximum conseillé : 300 secondes", 0);
+      dom.customSecondsInput.value = "300";
+      applySegmentSeconds(300, "custom");
+      return;
+    }
+
+    applySegmentSeconds(value, "custom");
+    setStatus(`Tranche personnalisée : ${Math.round(value)} secondes`, null);
+  });
+
+  dom.customSecondsInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      dom.applyCustomSegmentBtn.click();
+    }
+  });
 }
 
 function setupParallax() {
@@ -531,7 +652,7 @@ function createResultCard({ index, start, end, blob, fileName, extension, mimeTy
       <button class="download-btn share-btn" type="button">Partager / enregistrer</button>
     </div>
 
-    <button class="download-btn save-btn" type="button" style="background:linear-gradient(135deg,#3f7dff,#7a7cff);">
+    <button class="download-btn save-btn" type="button" style="background:linear-gradient(135deg,var(--accent),var(--accent-2));">
       Télécharger classique
     </button>
   `;
@@ -848,6 +969,7 @@ async function initSavedCutsOnStart() {
 
 function init() {
   setupTheme();
+  setupDesignControls();
   setupSegmentButtons();
   setupParallax();
   setupFileInput();
