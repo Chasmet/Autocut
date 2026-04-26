@@ -7,7 +7,7 @@
     content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
   />
   <title>CutFlow</title>
-  <link rel="stylesheet" href="style.css?v=20260426-2" />
+  <link rel="stylesheet" href="style.css?v=20260426-3" />
 </head>
 <body data-theme="dark">
   <div class="bg-layer" id="bgLayer"></div>
@@ -34,8 +34,8 @@
         <span class="tag">Application maison</span>
         <h2>Découpe rapide, claire, agréable sur mobile</h2>
         <p>
-          Choisis un fichier, sélectionne une tranche, puis télécharge chaque segment
-          un par un avec des noms simples : Cut 1, Cut 2, Cut 3...
+          Choisis un fichier, sélectionne une durée ou écris ton propre temps,
+          puis récupère tes cuts avec les boutons mobile.
         </p>
       </div>
     </section>
@@ -63,7 +63,7 @@
     <section class="panel glass">
       <div class="section-head">
         <h3>2. Choisir la tranche</h3>
-        <p>5, 10, 20 ou 30 secondes</p>
+        <p>Boutons rapides ou durée personnalisée</p>
       </div>
 
       <div class="segment-grid" id="segmentGrid">
@@ -71,6 +71,15 @@
         <button class="segment-btn" type="button" data-seconds="10">10s</button>
         <button class="segment-btn" type="button" data-seconds="20">20s</button>
         <button class="segment-btn" type="button" data-seconds="30">30s</button>
+      </div>
+
+      <div class="custom-time-box">
+        <label for="customSecondsInput">Temps personnalisé en secondes</label>
+        <div class="custom-time-row">
+          <input id="customSecondsInput" type="number" min="1" max="300" inputmode="numeric" placeholder="Exemple : 9" />
+          <button id="applyCustomSegmentBtn" class="small-btn" type="button">Appliquer</button>
+        </div>
+        <p>Tu peux mettre 9 secondes, 12 secondes, 45 secondes... Limite conseillée : 300 secondes.</p>
       </div>
 
       <div class="summary-row">
@@ -88,7 +97,38 @@
 
     <section class="panel glass">
       <div class="section-head">
-        <h3>3. Lancer la découpe</h3>
+        <h3>3. Personnaliser les couleurs</h3>
+        <p>Les couleurs restent enregistrées sur ton téléphone</p>
+      </div>
+
+      <div class="color-grid">
+        <label class="color-field">
+          <span>Couleur principale</span>
+          <input id="accentColorInput" type="color" value="#63a9ff" />
+        </label>
+
+        <label class="color-field">
+          <span>Couleur secondaire</span>
+          <input id="accent2ColorInput" type="color" value="#7a7cff" />
+        </label>
+
+        <label class="color-field">
+          <span>Boutons télécharger</span>
+          <input id="buttonColorInput" type="color" value="#18b3d2" />
+        </label>
+
+        <label class="color-field">
+          <span>Fond principal</span>
+          <input id="bgColorInput" type="color" value="#07111f" />
+        </label>
+      </div>
+
+      <button id="resetDesignBtn" class="secondary-btn" type="button">Réinitialiser les couleurs</button>
+    </section>
+
+    <section class="panel glass">
+      <div class="section-head">
+        <h3>4. Lancer la découpe</h3>
         <p>Le traitement se fait dans le navigateur</p>
       </div>
 
@@ -109,8 +149,8 @@
 
     <section class="panel glass">
       <div class="section-head">
-        <h3>4. Résultats</h3>
-        <p>Chaque cut est téléchargeable séparément</p>
+        <h3>5. Résultats</h3>
+        <p>Utilise surtout Partager / enregistrer sur Android</p>
       </div>
 
       <div class="results-list" id="resultsList">
@@ -124,12 +164,12 @@
       <h4>Important</h4>
       <p>
         Pour que l’application marche bien sur téléphone, utilise de préférence
-        <strong>GitHub Pages</strong>. Ouvrir directement le fichier HTML dans le téléphone
-        peut bloquer certains chargements du moteur vidéo/audio.
+        <strong>GitHub Pages</strong>. Si tu ne vois pas les nouveaux boutons,
+        actualise la page ou ajoute <strong>?v=20260426-3</strong> à la fin de l’adresse.
       </p>
     </section>
   </main>
 
-  <script type="module" src="script.js?v=20260426-2"></script>
+  <script type="module" src="script.js?v=20260426-3"></script>
 </body>
 </html>
